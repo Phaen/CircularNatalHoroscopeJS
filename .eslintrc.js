@@ -4,22 +4,15 @@ module.exports = {
     es2021: true,
     node: true,
   },
-  extends: [
-    'airbnb-base',
-  ],
+  extends: ['airbnb-base'],
   parserOptions: {
     ecmaVersion: 12,
     sourceType: 'module',
   },
   rules: {
-    semi: [
-      'error',
-      'always',
-    ],
-    quotes: [
-      'error',
-      'single',
-    ],
+    'linebreak-style': 'windows',
+    semi: ['error', 'always'],
+    quotes: ['error', 'single'],
     'spaced-comment': 'off',
     'max-len': ['error', { code: 200 }],
     'import/no-cycle': 'off',

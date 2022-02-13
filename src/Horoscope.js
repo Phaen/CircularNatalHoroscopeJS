@@ -5,9 +5,7 @@ import ChartPosition from './ChartPosition';
 import House from './House';
 
 import { LANGUAGE } from './utilities/language';
-import {
-  ASPECTS, BODIES, ANGLES, POINTS,
-} from './constants';
+import { ASPECTS, BODIES, ANGLES, POINTS } from './constants';
 
 import { getMidheavenSun, getAscendant } from './utilities/astronomy';
 import { createAspects } from './utilities/aspects';
@@ -95,6 +93,13 @@ export class Horoscope {
     this._celestialPoints = this.processCelestialPoints(this.Ephemeris.Results);
 
     this._aspects = createAspects(this);
+
+    // Quick and dirt fix for bugged last house end position
+    if (this.Houses[11].ChartPosition.EndPosition.Ecliptic.DecimalDegrees == 0)
+      this.Houses[11].ChartPosition.EndPosition =
+        this.Houses[0].ChartPosition.StartPosition;
+
+    this.addHousesToPoints(this.Angles.all);
 
     this.createAscendant = this.createAscendant.bind(this);
     this.createMidheaven = this.createMidheaven.bind(this);
@@ -304,8 +309,8 @@ export class Horoscope {
       // Dec/23/2000 (capricorn start) <-- Jan/10/2000 (comparison date) --> Jan/20/2001 (capricorn end) <-- this is why we need to check twice
 
       return (
-        this.origin.utcTime.isBetween(startDate, endDate, null, '[]')
-        || moment(this.origin.utcTime) // clone to avoid mutation
+        this.origin.utcTime.isBetween(startDate, endDate, null, '[]') ||
+        moment(this.origin.utcTime) // clone to avoid mutation
           .add(1, 'year')
           .isBetween(startDate, endDate, null, '[]')
       );
@@ -514,6 +519,14 @@ export class Horoscope {
       all: points,
       ...Object.assign({}, ...points.map((point) => ({ [point.key]: point }))),
     };
+  }
+
+  addHousesToPoints(points) {
+    for (const point of points)
+      point.House = getHouseFromDD(
+        this.Houses,
+        point.ChartPosition.Ecliptic.DecimalDegrees,
+      );
   }
 }
 
