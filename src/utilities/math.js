@@ -27,7 +27,7 @@ export const modulo = (number, mod) =>
   // => Returns Float
   ///////////
 
-  (number % mod + mod) % mod;
+  ((number % mod) + mod) % mod;
 export const hourTimeToDecimal = ({ hour = 0, minute = 0 } = {}) =>
   // HH:MM time format => Float
   // ex: 1:30 => 1.5
@@ -68,15 +68,20 @@ export const decimalDegreesToDMS = (decimalDegrees) => {
   };
 };
 
-export const isDegreeWithinCircleArc = (arcLow, arcHigh, degree, edges = '[)') => {
+export const isDegreeWithinCircleArc = (
+  arcLow,
+  arcHigh,
+  degree,
+  edges = '[)',
+) => {
   // Calculates if a point ("degree") is within an arc between "arcLow" and "arcHigh" within a circle.
   // With parameters for low/high inclusive or exclusive.
   // [] = low/high inclusive
   // () = low/high exclusive
   const operators = {
-    '[': (a, b) => a >= b,
+    '[': (a, b) => a - b > -Number.EPSILON * 360,
     '(': (a, b) => a > b,
-    ']': (a, b) => a <= b,
+    ']': (a, b) => b - a > -Number.EPSILON * 360,
     ')': (a, b) => a < b,
   };
 
